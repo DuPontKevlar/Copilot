@@ -1,0 +1,51 @@
+pip install transformers jedi
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
+
+# Load pre-trained model and tokenizer
+model_name = "gpt2"
+model = GPT2LMHeadModel.from_pretrained(model_name)
+tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+
+import jedi
+
+def get_code_completion(source_code, line, column):
+    """Uses Jedi to get code completion suggestions."""
+    script = jedi.Script(source_code, line, column)
+    completions = script.complete()
+    return [completion.name for completion in completions]
+
+def generate_code_suggestion(input_text):
+    """Generates code suggestion using GPT."""
+    inputs = tokenizer.encode(input_text, return_tensors="pt")
+    outputs = model.generate(inputs, max_length=50, num_return_sequences=1)
+    text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return text
+
+import ast
+
+def analyze_code(code):
+    """Analyzes the given Python code and returns its abstract syntax tree (AST)."""
+    tree = ast.parse(code)
+    return ast.dump(tree, indent=4)
+def copilot_interface(user_input, context_code=""):
+    """Main function to interact with the copilot."""
+    
+    if user_input.startswith("complete"):
+        line, column = map(int, user_input.split()[1:])
+        return get_code_completion(context_code, line, column)
+    
+    elif user_input.startswith("suggest"):
+        return generate_code_suggestion(context_code)
+    
+    elif user_input.startswith("analyze"):
+        return analyze_code(context_code)
+    
+    else:
+        return "Invalid command. Use 'complete', 'suggest', or 'analyze'."
+
+# Example Usage
+context_code = "import numpy as np\nnp.arra"
+user_input = "complete 2 6"  # For code completion at line 2, column 6
+
+result = copilot_interface(user_input, context_code)
+print(result)
