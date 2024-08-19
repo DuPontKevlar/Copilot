@@ -50,3 +50,11 @@ This will:
 Start a task npm: watch to compile the code and watch for changes
 Open a new VSCode window (you should use the extension there)
 Note: When you make changes, you should refresh that window to apply changes. To refresh, open Command Palette (Command+Shift+P on MacOS, or Ctrl+Shift+P on Windows), then choose "Developer: Reload window"
+4. Notes
+There are more code sources that should be considered besides StackOverflow
+If you see an unsupported error message, ignore it
+Limits:
+
+The extension uses fetch-node to get page content, and I don't know if there is any fetching limit
+The extension uses querySelector to extract code and other info. There is a risk of either StackOverflow or Google changing its querySelector
+If those factors became problems, the extension could be using their official APIs instead.
